@@ -16,7 +16,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		1C08C1861E46766F001E49BF /* Copier.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Copier.entitlements; sourceTree = "<group>"; };
 		1C08C1871E4676C3001E49BF /* CopyHelper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CopyHelper.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1C35C3A71E36703300C664FC /* CustomWindow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomWindow.swift; sourceTree = "<group>"; };
 		1C36B3241E32ED6400127BA7 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -25,6 +24,7 @@
 		1C36B32B1E32ED6400127BA7 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		1C36B32D1E32ED6400127BA7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1C36B3331E32EE3700127BA7 /* CustomCellView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomCellView.swift; sourceTree = "<group>"; };
+		1CF706EA1E4FACCD001FBE18 /* CopyHelper.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = CopyHelper.entitlements; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,7 +58,7 @@
 		1C36B3231E32ED6400127BA7 /* CopyHelper */ = {
 			isa = PBXGroup;
 			children = (
-				1C08C1861E46766F001E49BF /* Copier.entitlements */,
+				1CF706EA1E4FACCD001FBE18 /* CopyHelper.entitlements */,
 				1C36B3241E32ED6400127BA7 /* AppDelegate.swift */,
 				1C36B3261E32ED6400127BA7 /* ViewController.swift */,
 				1C36B3331E32EE3700127BA7 /* CustomCellView.swift */,
@@ -265,7 +265,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = Copier/Copier.entitlements;
+				CODE_SIGN_ENTITLEMENTS = CopyHelper.entitlements;
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = W3TQD9VLAQ;
@@ -281,7 +281,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = Copier/Copier.entitlements;
+				CODE_SIGN_ENTITLEMENTS = CopyHelper.entitlements;
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = W3TQD9VLAQ;

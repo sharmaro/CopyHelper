@@ -91,6 +91,7 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
         
         // If clipboard changed
         if(originalCount != currentCount && !isMain){
+
             // Getting
             let urlType: [Any] = [NSURL.self]
             if(pasteBoard.canReadObject(forClasses: urlType as! [AnyClass], options: nil)){
@@ -105,16 +106,22 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
                         let range = NSRange(location: 0, length: str.length)
                         
                         str.addAttribute(NSLinkAttributeName, value: fileURL, range: range)
-                        
-                        addURL(url: str)
+                        let string = fileURL.absoluteString
+                        addTextView(text: string!)
                         
                     } else {
                         // Most likely an image copied from internet
                         newPasteBoardString = pasteBoard.string(forType: NSPasteboardTypeString)
-                        // Only adding text if it is not fully whitespace
-                        if !(newPasteBoardString?.trimmingCharacters(in: CharacterSet.whitespaces).isEmpty)! {
-                            // String is not fully whitespaces
-                            imageAndTextHandling(newPasteBoardString!)
+                        if(newPasteBoardString != nil) {
+                            // If image
+                            let tempImage = NSImage(pasteboard: pasteBoard)
+                            if(tempImage != nil){
+                                addImageView(theImage: tempImage!)
+                                
+                            } else {
+                                // If text
+                                addTextView(text: newPasteBoardString!)
+                            }
                         }
                     }
                 }
@@ -127,9 +134,16 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
                 //                let attrString = pboardAttrStr[0] as! NSAttributedString
                 //                temp(url: attrString)
                 newPasteBoardString = pasteBoard.string(forType: NSPasteboardTypeString)
-                if !(newPasteBoardString?.trimmingCharacters(in: CharacterSet.whitespaces).isEmpty)! {
-                    // String is not fully whitespaces
-                    imageAndTextHandling(newPasteBoardString!)
+                if(newPasteBoardString != nil) {
+                    // If image
+                    let tempImage = NSImage(pasteboard: pasteBoard)
+                    if(tempImage != nil){
+                        addImageView(theImage: tempImage!)
+                    
+                    } else {
+                        // If text
+                        addTextView(text: newPasteBoardString!)
+                    }
                 }
             }
             
@@ -148,64 +162,18 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
         }
     }
     
-    // Adding a textView with a file url
-    func addURL(url: NSAttributedString) {
-        mainTableView.beginUpdates()
+    // Making an imageView with the user's copied image
+    func addImageView(theImage: NSImage) {
+        var tempImageView = NSImageView()
         
-        // Changing color of URL and underline
-        // As well as choosing underline style (single)
-        let linkAttributes = [NSForegroundColorAttributeName: NSColor.black, NSUnderlineColorAttributeName: NSColor.black, NSUnderlineStyleAttributeName: NSUnderlineStyle.styleSingle.rawValue] as [String : Any]
+        let newImage = resizeImage(image: theImage)
+        let theImageWidth = CGFloat(newImage.size.width)
+        let theImageHeight = CGFloat(newImage.size.height)
         
-        let textView = NSTextView(frame: NSRect(x: 0, y: 0, width: viewWidth, height: 14))
-        textView.isVerticallyResizable = true
-        textView.isEditable = false
-        textView.isSelectable = true
-        textView.backgroundColor = bgNSColor
-        textView.linkTextAttributes = linkAttributes
-        textView.appendAttr(url)
+        tempImageView = NSImageView(frame: NSMakeRect(0, 0, theImageWidth, theImageHeight))
         
-        views.append(textView)
-        
-        mainTableView.endUpdates()
-    }
-    
-    // Checks if copied item is text or image
-    func imageAndTextHandling(_ npbs: String) {
-        // Making a URL object from the string url
-        let fileUrl = URL(string: npbs)
-        
-        // URL object is automaticlaly nil if text is not a valid link
-        // Doesn't work for single words; all single words are valid links
-        if(fileUrl != nil){
-            var tempImageView = NSImageView()
-            
-            // Making an NSImage from image that is copied on Mac clipboard
-            var theImage = NSImage(pasteboard: pasteBoard)
-            
-            if(theImage != nil){
-                theImage = resizeImage(image: theImage!)
-                let theImageWidth = CGFloat((theImage?.size.width)!)
-                let theImageHeight = CGFloat((theImage?.size.height)!)
-                
-                tempImageView = NSImageView(frame: NSMakeRect(0, 0, theImageWidth, theImageHeight))
-                
-                tempImageView.image = theImage
-                views.append(tempImageView)
-            }
-            
-            // If it is a single word
-            if(theImage == nil){
-                // If copied text from source other than app
-                if(!isMain){
-                    addTextView(text: npbs)
-                }
-            }
-        } else {
-            // If the text is not a url then it's just plain text
-            if(!isMain){
-                addTextView(text: npbs)
-            }
-        }
+        tempImageView.image = newImage
+        views.append(tempImageView)
     }
     
     // Shrinking image to 300 x 190 if it is greater than 300 x 190
@@ -238,7 +206,7 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
         return NSImage(data: newImage.tiffRepresentation!)!
     }
     
-    // Adding textView to mainView
+    // Adding textView of normal string to mainView
     func addTextView(text: String){
         mainTableView.beginUpdates()
         
@@ -346,16 +314,14 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
         if (subView.description.contains("NSTextView")) {
             // Getting textView because its the only element in the subviews of mainView
             let tempTextView = subView[0] as! NSTextView
-            let stringFromTextView = tempTextView.textStorage?.string
+            let stringFromTextView = tempTextView.string
             
-            let fileFromTextView = tempTextView.textStorage?.mutableString
-            let stringURL = fileFromTextView!.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
-            let url = NSURL(string: stringURL!)
+            let url = NSURL(string: stringFromTextView!)
             
             // Allows copying files to NSPasteboard
-            if(url!.isFileURL){
-                let fileList: [Any] = [fileFromTextView!]
-                // Making type of pasteboard filenames to add files to it
+            if(url != nil && url!.isFileURL) {
+                let fileList: [Any] = [url!.path!]
+                //              Making type of pasteboard filenames to add files to it
                 pasteBoard.declareTypes([NSFilenamesPboardType], owner: nil)
                 pasteBoard.setPropertyList(fileList, forType: NSFilenamesPboardType)
                 
@@ -382,8 +348,8 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
     
     func copiedItemAlert() {
         let myPopup: NSAlert = NSAlert()
-        myPopup.messageText = "Copied Item"
-        myPopup.alertStyle = .warning
+        myPopup.messageText = "Copied item!"
+        myPopup.alertStyle = .informational
         myPopup.accessoryView?.frame.size.width = 50
         myPopup.accessoryView?.frame.size.height = 50
         myPopup.runModal()
